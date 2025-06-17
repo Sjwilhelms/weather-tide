@@ -12,4 +12,9 @@ This project will access Weather, Tide, Geocoding APIs.
 
 The users will input their schedule and the optimum conditions for their hobby.
 
-Let slip the dogs of fun!
+## Potential issues
+
+Many cities around the world share the same name (eg. Berlin).
+
+Many cities are not coastal
+
