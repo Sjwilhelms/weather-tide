@@ -18,3 +18,4 @@ Many cities around the world share the same name (eg. Berlin).
 
 Many cities are not coastal
 
+Tide API's are an unknown quantity at present
