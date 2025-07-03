@@ -12,10 +12,26 @@ This project will access Weather, Tide, Geocoding APIs.
 
 The users will input their schedule and the optimum conditions for their hobby.
 
-## Potential issues
+## Anticipated Error Cases
 
-Many cities around the world share the same name (eg. Berlin).
+Many cities share a name (eg. Berlin).
 
 Many cities are not coastal
 
 Tide API's are an unknown quantity at present
+
+## psedocode
+
+take user input
+
+how old is the cache
+is there a cache
+
+if there is a cache
+
+else get new data
+overwrite cache
+
+use data from the cache
+
+display the data
