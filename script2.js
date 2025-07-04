@@ -7,7 +7,6 @@ let lcache = null;
 // function searchWeather(location) {}
 
 async function searchWeather(location) {
-    
     // trim and lower case
     location = normaliseLocation(location);
     console.log("Location is normalized: ", location);
@@ -16,16 +15,26 @@ async function searchWeather(location) {
     cache = checkCache(location);
 
     if (cache) {
+        console.log("Updating the Display");
         updateWeatherDisplay(data);
+        
     } else {
+        console.log("Fetching weather data");
         const data = await fetchWeatherData(location);
+
+        console.log("Updating the Display");
+        updateWeatherDisplay(data);
+
+        console.log("Saving data to cache");
         saveToCache(location, data);
-        return
+        return;
     }
 
     console.log("Fetching weather data");
+
+    console.log("Updating the Display");
+    updateWeatherDisplay(data);
     const data = await fetchWeatherData(location);
-    console.log(data);
 
     console.log("Saving data to cache");
     saveToCache(location, data);
