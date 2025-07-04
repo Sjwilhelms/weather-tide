@@ -20,14 +20,20 @@ Many cities are not coastal
 
 Tide API's are an unknown quantity at present
 
-## psedocode
+## weatherapp 0.01 rudimentary weather app that makes api calls to fetch info
+
+## weatherapp 0.02 add caching for api daya - call cache instead
+
+Reducing uneccessary API calls
+
+## pseudocode for checking the cache
 
 take user input
 
 how old is the cache
 is there a cache
 
-if there is a cache
+if there is a valid cache
 
 else get new data
 overwrite cache
@@ -35,3 +41,29 @@ overwrite cache
 use data from the cache
 
 display the data
+
+## issues
+
+the getAPI functions only care about the cacheAge. need conditions for overwriting in the case of a different seach
+
+## to do
+
+store previous results on the front screen
+append children to an empty list
+log action
+
+if cache.name matches the userinput
+log result
+
+if exact match call the cache
+else make the api call and overwrite
+log result
+
+
+
+
+
+
+
+
+

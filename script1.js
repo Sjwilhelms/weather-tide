@@ -33,6 +33,13 @@ async function getWeather() {
         }
     }
 
+    if(cityName === document.getElementById("userInput").value){
+        console.log("This is a repeated search.");
+        return;
+    }
+    console.log("This")
+
+
     // if cache or cacheTime are null
     try {
         // async fetch data from api
