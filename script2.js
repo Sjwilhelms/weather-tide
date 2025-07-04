@@ -1,64 +1,67 @@
 let userInput;
-let cache = [];
-let lcache = null;
+let cache = new Map();
+let weatherInfo;
 
 // Main application functions
 
 // function searchWeather(location) {}
 
 async function searchWeather(location) {
-    // trim and lower case
-    location = normaliseLocation(location);
-    console.log("Location is normalized: ", location);
+    try {
+        location = normaliseLocation(location);
 
-    // check if cache
-    cache = checkCache(location);
+        const cachedData = checkCache(location);
 
-    if (cache) {
-        console.log("Updating the Display");
-        updateWeatherDisplay(data);
-        
-    } else {
-        console.log("Fetching weather data");
-        const data = await fetchWeatherData(location);
+        if (cachedData) {
+            console.log(cachedData);
+            console.log("Using cached data");
+            console.log("Updating the Display");
+            updateWeatherDisplay(cachedData);
+            return cachedData;
+            
+        } else {
+            console.log("Fetching fresh data");
+            const data = await fetchWeatherData(location);
 
-        console.log("Updating the Display");
-        updateWeatherDisplay(data);
+            if (data) {
+                console.log(data);
 
-        console.log("Saving data to cache");
-        saveToCache(location, data);
-        return;
+                console.log("Updating the Display");
+                updateWeatherDisplay(data);
+
+                console.log("Saving data to cache");
+                saveToCache(location, data);
+            }
+        }
+
+    } catch (error) {
+        console.log("There was an error.");
     }
-
-    console.log("Fetching weather data");
-
-    console.log("Updating the Display");
-    updateWeatherDisplay(data);
-    const data = await fetchWeatherData(location);
-
-    console.log("Saving data to cache");
-    saveToCache(location, data);
 }
 
 // function handleSearch() {}
 function handleSearch() {
     userInput = document.getElementById("userInput").value;
+    
+    if(!userInput){
+        console.log("Invalid user input");
+        return;
+    }
+
     const location = userInput;
-    console.log("User input recieved: ", location);
+    console.log("User input recieved:", location);
     searchWeather(location);
 }
 
 // Cache management
 
 function checkCache(location) {
-    return cache;
+    return cache.get(location) || null;
 }
 
 function saveToCache(location, data) {
-    lcache = location;
-    cache = data;
-    console.log(lcache, cache);
-    return lcache, cache;
+    cache.set(location, data);
+    console.log("Cached data for", location);
 }
 
 // API functions
@@ -84,13 +87,37 @@ async function fetchWeatherData(location) {
 
 // UI functions
 
-// function updateWeatherDisplay(data) {}
+function updateWeatherDisplay(data) {
+    weatherInfo = document.getElementById("weatherInfo");
+
+    const tempKelvin = data.main.temp;
+    const temp = (tempKelvin - 273.15).toFixed(2);
+    const weatherMain = data.weather[0].main;
+    const desc = data.weather[0].description;
+    const windDirection = data.wind.deg;
+    const windSpeed = data.wind.speed;
+
+    weatherInfo.innerHTML = "";
+
+    weatherInfo.innerHTML = `
+                <div class="weatherTemp">Temperature: ${temp} Degrees</div>
+                <div class="weatherMain">Overview: ${weatherMain}</div>
+                <div class="weatherDescription">Description: ${desc}</div>
+                <div class="windSpeed">Wind Direction: ${windDirection} Degrees</div>
+                <div class="windDirection">Wind Speed: ${windSpeed}Kts</div>
+            `;
+
+    console.log("The display has been updated");
+}
+
 // function showLoadingState() {}
 // function showErrorMessage(error) {}
 
 // Utility functions
 
 function normaliseLocation(location) {
-    return location.toLowerCase().trim();
+    location = location.toLowerCase().trim();
+    console.log("Location is normalized:", location);
+    return location;
 }
 // function formatTemperature(temp) {}
