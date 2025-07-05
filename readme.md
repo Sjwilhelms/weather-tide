@@ -48,16 +48,7 @@ the getAPI functions only care about the cacheAge. need conditions for overwriti
 
 ## to do
 
-store previous results on the front screen
-append children to an empty list
-log action
 
-if cache.name matches the userinput
-log result
-
-if exact match call the cache
-else make the api call and overwrite
-log result
 
 
 

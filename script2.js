@@ -19,12 +19,13 @@ async function searchWeather(location) {
 
         const cachedWeather = checkWeatherCache(location);
         const cachedGeo = checkGeoCache(location);
+        const cachedTide = checkGeoCache(location);
 
-        if (cachedWeather && cachedGeo) {
+        if (cachedWeather && cachedGeo && cachedTide) {
             console.log("Using cached data");
             console.log("Updating the display with cached data");
-            updateWeatherDisplay(cachedWeather, cachedGeo);
-            return cachedWeather, cachedGeo;
+            updateWeatherDisplay(cachedWeather, cachedGeo, cachedTide);
+            return cachedWeather, cachedGeo, cachedTide;
         } else {
             console.log("Fetching fresh data");
             const weatherData = await fetchWeatherData(location);
@@ -90,10 +91,10 @@ function saveToGeoCache(location, geoData) {
 
 // tideData cache
 
-function checkTideCache(location){
+function checkTideCache(location) {
     return tideCache.get(location) || null;
 }
-function saveToTideCache(location, tideData){
+function saveToTideCache(location, tideData) {
     tideCache.set(location, tideData);
     console.log("Cached tide data for", location);
 }
@@ -122,82 +123,98 @@ async function fetchGeoData(location) {
         );
 
         if (response.ok) {
-            const geoData = await response.json();
-            return geoData;
+            const data = await response.json();
+            return data;
         }
     } catch (error) {
         console.log(error);
     }
 }
 
-async function fetchTideData(lat, lon) {
+async function fetchTideData() {
+    let tideData = [];
+
     try {
         console.log("Fetching fresh tide data");
-        const response = await fetch(
-            `https://api.stormglass.io/v2/tide/extremes/point?lat=${lat}&lng=${lon}`,
-            {
-                headers: {
-                    Authorization: "example_api_keuy",
-                },
-            }
-        );
-
+        console.log("In development we will access a local object");
+        const response = await fetch("object.json");
+        console.log("Object found");
         if (response.ok) {
-            const tideData = await response.json();
-            console.log(tideData);
+            console.log("Response is okay");
+            tideData = await response.json();
+            console.log("Got the data");
+            console.log(tideData.data[0]);
             return tideData;
+        } else {
+            console.log("The response is not okay");
         }
     } catch (error) {
         console.log(error);
     }
 }
+
+// async function fetchTideData(lat, lon) {
+//     try {
+//         console.log("Fetching fresh tide data");
+//         console.log("In development we will access a local object");
+//         const response = await fetch("object.json");
+
+//         if (response.ok) {
+//             const data = await response.json();
+//             console.log(data);
+//             return data;
+//         }
+//     } catch (error) {
+//         console.log(error);
+//     }
+// }
 
 // function processAPIResponse(response) {}
 
 // UI functions
 
-function updateWeatherDisplay(data, geoData) {
+function updateWeatherDisplay(weatherData, geoData, tideData) {
     weatherInfo = document.getElementById("weatherInfo");
     cityInfo = document.getElementById("cityInfo");
     tideInfo = document.getElementById("tideInfo");
 
-    const tempKelvin = data.main.temp;
+    const tempKelvin = weatherData.main.temp;
     const temp = (tempKelvin - 273.15).toFixed(2);
-    const weatherMain = data.weather[0].main;
-    const desc = data.weather[0].description;
-    const windDirection = data.wind.deg;
-    const windSpeed = data.wind.speed;
-
+    const weatherMain = weatherData.weather[0].main;
+    const desc = weatherData.weather[0].description;
+    const windDirection = weatherData.wind.deg;
+    const windSpeed = weatherData.wind.speed;
 
     const name = geoData.results[0].name;
     const country = geoData.results[0].country_code;
     const latitude = geoData.results[0].latitude;
     const longitude = geoData.results[0].longitude;
 
-    
+    const type = tideData.data[0].type;
+    const time = tideData.data[0].time;
 
     weatherInfo.innerHTML = "";
 
     weatherInfo.innerHTML = `
-                <div class="weatherTemp">Temperature: ${temp} Degrees</div>
-                <div class="weatherMain">Overview: ${weatherMain}</div>
-                <div class="weatherDescription">Description: ${desc}</div>
-                <div class="windSpeed">Wind Direction: ${windDirection} Degrees</div>
-                <div class="windDirection">Wind Speed: ${windSpeed}Kts</div>
+                <div class="info">Temperature: ${temp} Degrees</div>
+                <div class="info">Overview: ${weatherMain}</div>
+                <div class="info">Description: ${desc}</div>
+                <div class="info">Wind Direction: ${windDirection} Degrees</div>
+                <div class="info">Wind Speed: ${windSpeed}Kts</div>
             `;
 
     cityInfo.innerHTML = "";
 
     cityInfo.innerHTML = `
-                <div class="weatherOverview">${name}, ${country}</div>
-                <div class="weatherOverview">Latitude: ${latitude}</div>
-                <div class="weatherOverview">Longitude ${longitude}</div>
+                <div class="info">${name}, ${country}</div>
+                <div class="info">Latitude: ${latitude}</div>
+                <div class="info">Longitude ${longitude}</div>
 
             `;
     tideInfo.innerHTML = "";
 
     tideInfo.innerHTML = `
-
+                <div class="info">${type} water is at ${time}</div>
             `;
 
     console.log("The display has been updated");
