@@ -2,6 +2,7 @@ import { WEATHER_API_KEY } from "./secretKeys.js";
 import { TIDE_API_KEY } from "./secretKeys.js";
 
 let userInput;
+let selectedDate;
 let weatherCache = new Map();
 let geoCache = new Map();
 let tideCache = new Map();
@@ -13,10 +14,10 @@ let tideInfo;
 
 // function searchWeather(location) {}
 
-async function searchWeather(location) {
+async function searchWeather(location, date) {
     try {
         location = normaliseLocation(location);
-
+        console.log(date);
         const cachedWeather = checkWeatherCache(location);
         const cachedGeo = checkGeoCache(location);
         const cachedTide = checkTideCache(location);
@@ -54,39 +55,23 @@ window.handleSearch = handleSearch;
 // function handleSearch() {}
 function handleSearch() {
     userInput = document.getElementById("userInput").value;
+    selectedDate = document.getElementById("dateInput").value;
 
     if (!userInput) {
-        console.log("Invalid user input");
+        console.log("Invalid location");
+        return;
+    }
+
+    if (!selectedDate) {
+        console.log("Invalid date");
         return;
     }
 
     const location = userInput;
-    console.log("User input recieved:", location);
-    searchWeather(location);
-}
-
-// Cache management
-
-function checkWeatherCache(location) {
-    return weatherCache.get(location) || null;
-}
-function saveToWeatherCache(location, weatherData) {
-    weatherCache.set(location, weatherData);
-    console.log("Cached weather data for", location);
-}
-function checkGeoCache(location) {
-    return geoCache.get(location) || null;
-}
-function saveToGeoCache(location, geoData) {
-    geoCache.set(location, geoData);
-    console.log("Cached geo data for", location);
-}
-function checkTideCache(location) {
-    return tideCache.get(location) || null;
-}
-function saveToTideCache(location, tideData) {
-    tideCache.set(location, tideData);
-    console.log("Cached tide data for", location);
+    const date = selectedDate;
+    console.log("Location recieved:", location);
+    console.log("Date seleccted:", date);
+    searchWeather(location, date);
 }
 
 // API functions
@@ -126,9 +111,9 @@ async function fetchTideData() {
 
     try {
         console.log("Fetching fresh tide data");
-        console.log("In development we will access a local object");
+        console.log("In development use a local tide data");
         const response = await fetch("object.json");
-        console.log("Object found");
+        console.log("Local object found");
         if (response.ok) {
             console.log("Response is okay");
             tideData = await response.json();
@@ -219,6 +204,11 @@ function updateWeatherDisplay(weatherData, geoData, tideData) {
     console.log("The display has been updated");
 }
 
+function updateHistoryDisplay(){
+    const history = document.getElementById("history");
+    history.innerHTML = '';
+}
+
 // function showLoadingState() {}
 // function showErrorMessage(error) {}
 
@@ -228,4 +218,28 @@ function normaliseLocation(location) {
     location = location.toLowerCase().trim();
     console.log("Location is normalized:", location);
     return location;
+}
+
+// Cache management
+
+function checkWeatherCache(location) {
+    return weatherCache.get(location) || null;
+}
+function saveToWeatherCache(location, weatherData) {
+    weatherCache.set(location, weatherData);
+    console.log("Cached weather data for", location);
+}
+function checkGeoCache(location) {
+    return geoCache.get(location) || null;
+}
+function saveToGeoCache(location, geoData) {
+    geoCache.set(location, geoData);
+    console.log("Cached geo data for", location);
+}
+function checkTideCache(location) {
+    return tideCache.get(location) || null;
+}
+function saveToTideCache(location, tideData) {
+    tideCache.set(location, tideData);
+    console.log("Cached tide data for", location);
 }
