@@ -1,8 +1,10 @@
 import { WEATHER_API_KEY } from "./secretKeys.js";
 
 let userInput;
-let cache = new Map();
+let weatherCache = new Map();
+let geoCache = new Map();
 let weatherInfo;
+let cityInfo;
 
 // Main application functions
 
@@ -12,24 +14,26 @@ async function searchWeather(location) {
     try {
         location = normaliseLocation(location);
 
-        const cachedData = checkCache(location);
+        const cachedWeather = checkWeatherCache(location);
+        const cachedGeo = checkGeoCache(location);
 
-        if (cachedData) {
+        if (cachedWeather && cachedGeo) {
             console.log("Using cached data");
             console.log("Updating the display with cached data");
-            updateWeatherDisplay(cachedData);
-            return cachedData;
+            updateWeatherDisplay(cachedWeather, cachedGeo);
+            return cachedWeather, cachedGeo;
         } else {
             console.log("Fetching fresh data");
-            const data = await fetchWeatherData(location);
+            const weatherData = await fetchWeatherData(location);
+            const geoData = await fetchGeoData(location);
 
-            if (data) {
-
+            if (weatherData && geoData) {
                 console.log("Updating the display with fresh data");
-                updateWeatherDisplay(data);
+                updateWeatherDisplay(weatherData, geoData);
 
                 console.log("Saving fresh data to cache");
-                saveToCache(location, data);
+                saveToWeatherCache(location, weatherData);
+                saveToGeoCache(location, geoData);
             }
         }
     } catch (error) {
@@ -55,13 +59,26 @@ function handleSearch() {
 
 // Cache management
 
-function checkCache(location) {
-    return cache.get(location) || null;
+// weather cache
+
+function checkWeatherCache(location) {
+    return weatherCache.get(location) || null;
 }
 
-function saveToCache(location, data) {
-    cache.set(location, data);
-    console.log("Cached data for", location);
+function saveToWeatherCache(location, weatherData) {
+    weatherCache.set(location, weatherData);
+    console.log("Cached weather data for", location);
+}
+
+// geoData cache
+
+function checkGeoCache(location) {
+    return geoCache.get(location) || null;
+}
+
+function saveToGeoCache(location, geoData) {
+    geoCache.set(location, geoData);
+    console.log("Cached geo data for", location);
 }
 
 // API functions
@@ -80,12 +97,29 @@ async function fetchWeatherData(location) {
     }
 }
 
+async function fetchGeoData(location) {
+    try {
+        console.log("Fetching fresh geo data");
+        const response = await fetch(
+            `https://geocoding-api.open-meteo.com/v1/search?name=${location}&count=10&language=en&format=json`
+        );
+
+        if (response.ok) {
+            const geoData = await response.json();
+            return geoData;
+        }
+    } catch (error) {
+        console.log(error);
+    }
+}
+
 // function processAPIResponse(response) {}
 
 // UI functions
 
-function updateWeatherDisplay(data) {
+function updateWeatherDisplay(data, geoData) {
     weatherInfo = document.getElementById("weatherInfo");
+    cityInfo = document.getElementById("cityInfo");
 
     const tempKelvin = data.main.temp;
     const temp = (tempKelvin - 273.15).toFixed(2);
@@ -93,6 +127,11 @@ function updateWeatherDisplay(data) {
     const desc = data.weather[0].description;
     const windDirection = data.wind.deg;
     const windSpeed = data.wind.speed;
+
+    const name = geoData.results[0].name;
+    const country = geoData.results[0].country_code;
+    const latitude = geoData.results[0].latitude;
+    const longitude = geoData.results[0].longitude;
 
     weatherInfo.innerHTML = "";
 
@@ -102,6 +141,15 @@ function updateWeatherDisplay(data) {
                 <div class="weatherDescription">Description: ${desc}</div>
                 <div class="windSpeed">Wind Direction: ${windDirection} Degrees</div>
                 <div class="windDirection">Wind Speed: ${windSpeed}Kts</div>
+            `;
+
+    cityInfo.innerHTML = "";
+
+    cityInfo.innerHTML = `
+                <div class="weatherOverview">${name}, ${country}</div>
+                <div class="weatherOverview">Latitude: ${latitude}</div>
+                <div class="weatherOverview">Longitude ${longitude}</div>
+
             `;
 
     console.log("The display has been updated");
