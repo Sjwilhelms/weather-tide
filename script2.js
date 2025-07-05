@@ -1,10 +1,13 @@
 import { WEATHER_API_KEY } from "./secretKeys.js";
+import { TIDE_API_KEY } from "./secretKeys.js";
 
 let userInput;
 let weatherCache = new Map();
 let geoCache = new Map();
+let tideCache = new Map();
 let weatherInfo;
 let cityInfo;
+let tideInfo;
 
 // Main application functions
 
@@ -26,14 +29,18 @@ async function searchWeather(location) {
             console.log("Fetching fresh data");
             const weatherData = await fetchWeatherData(location);
             const geoData = await fetchGeoData(location);
+            const lat = geoData.results[0].latitude;
+            const lon = geoData.results[0].longitude;
+            const tideData = await fetchTideData(lat, lon);
 
-            if (weatherData && geoData) {
+            if (weatherData && geoData && tideData) {
                 console.log("Updating the display with fresh data");
-                updateWeatherDisplay(weatherData, geoData);
+                updateWeatherDisplay(weatherData, geoData, tideData);
 
                 console.log("Saving fresh data to cache");
                 saveToWeatherCache(location, weatherData);
                 saveToGeoCache(location, geoData);
+                saveToTideCache(location, tideData);
             }
         }
     } catch (error) {
@@ -81,6 +88,16 @@ function saveToGeoCache(location, geoData) {
     console.log("Cached geo data for", location);
 }
 
+// tideData cache
+
+function checkTideCache(location){
+    return tideCache.get(location) || null;
+}
+function saveToTideCache(location, tideData){
+    tideCache.set(location, tideData);
+    console.log("Cached tide data for", location);
+}
+
 // API functions
 
 async function fetchWeatherData(location) {
@@ -113,6 +130,28 @@ async function fetchGeoData(location) {
     }
 }
 
+async function fetchTideData(lat, lon) {
+    try {
+        console.log("Fetching fresh tide data");
+        const response = await fetch(
+            `https://api.stormglass.io/v2/tide/extremes/point?lat=${lat}&lng=${lon}`,
+            {
+                headers: {
+                    Authorization: "dcc8fd30-4b9e-11f0-89da-0242ac130006-dcc8fda8-4b9e-11f0-89da-0242ac130006",
+                },
+            }
+        );
+
+        if (response.ok) {
+            const tideData = await response.json();
+            console.log(tideData);
+            return tideData;
+        }
+    } catch (error) {
+        console.log(error);
+    }
+}
+
 // function processAPIResponse(response) {}
 
 // UI functions
@@ -120,6 +159,7 @@ async function fetchGeoData(location) {
 function updateWeatherDisplay(data, geoData) {
     weatherInfo = document.getElementById("weatherInfo");
     cityInfo = document.getElementById("cityInfo");
+    tideInfo = document.getElementById("tideInfo");
 
     const tempKelvin = data.main.temp;
     const temp = (tempKelvin - 273.15).toFixed(2);
@@ -149,6 +189,11 @@ function updateWeatherDisplay(data, geoData) {
                 <div class="weatherOverview">${name}, ${country}</div>
                 <div class="weatherOverview">Latitude: ${latitude}</div>
                 <div class="weatherOverview">Longitude ${longitude}</div>
+
+            `;
+    tideInfo.innerHTML = "";
+
+    tideInfo.innerHTML = `
 
             `;
 

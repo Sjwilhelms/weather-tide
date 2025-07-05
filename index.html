@@ -1,39 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+        <link rel="stylesheet" href="style.css" />
+    </head>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="style.css">
-</head>
+    <body>
+        <div class="title">
+            <h1>Time and Tide</h1>
+            <h2>Action Report</h2>
+        </div>
 
-<body>
-    <h1>Time and Tide</h1>
-    <h2>Weather Report</h2>
-    <div class="userInput">
-        <input type="text" id="userInput" placeholder="Search for your city" autofocus>
-        <button onclick="handleSearch()">Get the Forecast</button>
-    </div>
-    <div class="weatherInfo">
-        <h2>City Information</h2>
-        <div id="cityInfo">
+        <div class="container">
+            
         </div>
-    </div>
-    <div class="weatherInfo">
-        <h2>Weather Information</h2>
-        <div id="weatherInfo">
+        <div class="userInput">
+            <input
+                type="text"
+                id="userInput"
+                placeholder="Search for your city"
+                autofocus
+            />
+            <button onclick="handleSearch()">Get the Forecast</button>
         </div>
-    </div>
-    <div class="weatherInfo">
-        <h2>Tide Information</h2>
-        <div id="tideInfo">
+        <div class="display">
+            <div class="weatherInfo">
+                <h2>City Information</h2>
+                <div id="cityInfo"></div>
+            </div>
+            <div class="weatherInfo">
+                <h2>Weather Information</h2>
+                <div id="weatherInfo"></div>
+            </div>
+            <div class="weatherInfo">
+                <h2>Tide Information</h2>
+                <div id="tideInfo"></div>
+            </div>
         </div>
-    </div>
+
         <script type="module" src="secretKeys.js"></script>
 
-    <script type="module" src="script2.js"></script>
-    
-</body>
-
+        <script type="module" src="script2.js"></script>
+    </body>
 </html>
