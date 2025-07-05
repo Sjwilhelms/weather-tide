@@ -19,7 +19,7 @@ async function searchWeather(location) {
 
         const cachedWeather = checkWeatherCache(location);
         const cachedGeo = checkGeoCache(location);
-        const cachedTide = checkGeoCache(location);
+        const cachedTide = checkTideCache(location);
 
         if (cachedWeather && cachedGeo && cachedTide) {
             console.log("Using cached data");
@@ -67,30 +67,20 @@ function handleSearch() {
 
 // Cache management
 
-// weather cache
-
 function checkWeatherCache(location) {
     return weatherCache.get(location) || null;
 }
-
 function saveToWeatherCache(location, weatherData) {
     weatherCache.set(location, weatherData);
     console.log("Cached weather data for", location);
 }
-
-// geoData cache
-
 function checkGeoCache(location) {
     return geoCache.get(location) || null;
 }
-
 function saveToGeoCache(location, geoData) {
     geoCache.set(location, geoData);
     console.log("Cached geo data for", location);
 }
-
-// tideData cache
-
 function checkTideCache(location) {
     return tideCache.get(location) || null;
 }
@@ -191,7 +181,13 @@ function updateWeatherDisplay(weatherData, geoData, tideData) {
     const longitude = geoData.results[0].longitude;
 
     const type = tideData.data[0].type;
+    const type1 = tideData.data[1].type;
+    const type2 = tideData.data[2].type;
+    const type3 = tideData.data[3].type;
     const time = tideData.data[0].time;
+    const time1 = tideData.data[1].time;
+    const time2 = tideData.data[2].time;
+    const time3 = tideData.data[3].time;
 
     weatherInfo.innerHTML = "";
 
@@ -215,6 +211,9 @@ function updateWeatherDisplay(weatherData, geoData, tideData) {
 
     tideInfo.innerHTML = `
                 <div class="info">${type} water is at ${time}</div>
+                <div class="info">${type1} water is at ${time1}</div>
+                <div class="info">${type2} water is at ${time2}</div>
+                <div class="info">${type3} water is at ${time3}</div>
             `;
 
     console.log("The display has been updated");

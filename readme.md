@@ -46,7 +46,19 @@ display the data
 
 the getAPI functions only care about the cacheAge. need conditions for overwriting in the case of a different seach
 
-## to do
+## weatherApp 0.03 three api calls, caches
+
+we use tide data, geo data, and weather data
+
+display it on the screen
+
+## issues
+
+utc timestamp format not ideal for display?
+
+user select the date and convert that into UT and search for a match?
+
+introduce the hobby logic
 
 
 
