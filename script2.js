@@ -137,7 +137,7 @@ async function fetchTideData(lat, lon) {
             `https://api.stormglass.io/v2/tide/extremes/point?lat=${lat}&lng=${lon}`,
             {
                 headers: {
-                    Authorization: "dcc8fd30-4b9e-11f0-89da-0242ac130006-dcc8fda8-4b9e-11f0-89da-0242ac130006",
+                    Authorization: "example_api_keuy",
                 },
             }
         );
@@ -168,10 +168,13 @@ function updateWeatherDisplay(data, geoData) {
     const windDirection = data.wind.deg;
     const windSpeed = data.wind.speed;
 
+
     const name = geoData.results[0].name;
     const country = geoData.results[0].country_code;
     const latitude = geoData.results[0].latitude;
     const longitude = geoData.results[0].longitude;
+
+    
 
     weatherInfo.innerHTML = "";
 
