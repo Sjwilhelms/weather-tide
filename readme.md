@@ -58,9 +58,13 @@ utc timestamp format not ideal for display?
 
 user select the date and convert that into UT and search for a match?
 
-introduce the hobby logic
+limit date input to next 7 days?
 
-display previous searches
+display previous searches overview from cache
+
+## pseudcode
+
+take user input
 
 
 
