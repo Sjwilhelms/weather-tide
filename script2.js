@@ -1,3 +1,5 @@
+import { WEATHER_API_KEY } from "./secretKeys.js";
+
 let userInput;
 let cache = new Map();
 let weatherInfo;
@@ -13,37 +15,35 @@ async function searchWeather(location) {
         const cachedData = checkCache(location);
 
         if (cachedData) {
-            console.log(cachedData);
             console.log("Using cached data");
-            console.log("Updating the Display");
+            console.log("Updating the display with cached data");
             updateWeatherDisplay(cachedData);
             return cachedData;
-            
         } else {
             console.log("Fetching fresh data");
             const data = await fetchWeatherData(location);
 
             if (data) {
-                console.log(data);
 
-                console.log("Updating the Display");
+                console.log("Updating the display with fresh data");
                 updateWeatherDisplay(data);
 
-                console.log("Saving data to cache");
+                console.log("Saving fresh data to cache");
                 saveToCache(location, data);
             }
         }
-
     } catch (error) {
         console.log("There was an error.");
     }
 }
 
+window.handleSearch = handleSearch;
+
 // function handleSearch() {}
 function handleSearch() {
     userInput = document.getElementById("userInput").value;
-    
-    if(!userInput){
+
+    if (!userInput) {
         console.log("Invalid user input");
         return;
     }
@@ -66,13 +66,10 @@ function saveToCache(location, data) {
 
 // API functions
 
-// async function fetchWeatherData(location) {}
 async function fetchWeatherData(location) {
-    const APIKey = "83cf14a6a2dd86474328a3acb4585de5";
-
     try {
         const response = await fetch(
-            `https://api.openweathermap.org/data/2.5/weather?q=${location}&appid=${APIKey}`
+            `https://api.openweathermap.org/data/2.5/weather?q=${location}&appid=${WEATHER_API_KEY}`
         );
         if (response.ok) {
             const data = await response.json();
@@ -120,4 +117,3 @@ function normaliseLocation(location) {
     console.log("Location is normalized:", location);
     return location;
 }
-// function formatTemperature(temp) {}
