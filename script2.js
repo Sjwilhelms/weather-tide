@@ -12,10 +12,9 @@ let tideInfo;
 
 // Main application functions
 
-// function searchWeather(location) {}
-
 async function searchWeather(location, date) {
     try {
+        
         location = normaliseLocation(location);
         console.log(date);
         const cachedWeather = checkWeatherCache(location);
@@ -26,7 +25,7 @@ async function searchWeather(location, date) {
             console.log("Using cached data");
             console.log("Updating the display with cached data");
             updateWeatherDisplay(cachedWeather, cachedGeo, cachedTide);
-            updateHistoryDisplay(weatherData, geoData, tideData)
+            updateHistoryDisplay(weatherData, geoData, tideData);
             return cachedWeather, cachedGeo, cachedTide;
         } else {
             console.log("Fetching fresh data");
@@ -48,10 +47,11 @@ async function searchWeather(location, date) {
             }
         }
     } catch (error) {
-        console.log("There was an error.");
+        showErrorMessage("There was an error.");
     }
 }
 
+// script2.js is a js module. window makes handleSearch() accessible in the window
 window.handleSearch = handleSearch;
 
 // function handleSearch() {}
@@ -60,12 +60,12 @@ function handleSearch() {
     selectedDate = document.getElementById("dateInput").value;
 
     if (!userInput) {
-        console.log("Invalid location");
+        showErrorMessage("Invalid location");
         return;
     }
 
     if (!selectedDate) {
-        console.log("Invalid date");
+        showErrorMessage("Invalid date");
         return;
     }
 
@@ -130,24 +130,6 @@ async function fetchTideData() {
     }
 }
 
-// async function fetchTideData(lat, lon) {
-//     try {
-//         console.log("Fetching fresh tide data");
-//         console.log("In development we will access a local object");
-//         const response = await fetch("object.json");
-
-//         if (response.ok) {
-//             const data = await response.json();
-//             console.log(data);
-//             return data;
-//         }
-//     } catch (error) {
-//         console.log(error);
-//     }
-// }
-
-// function processAPIResponse(response) {}
-
 // UI functions
 
 function updateWeatherDisplay(weatherData, geoData, tideData) {
@@ -208,7 +190,7 @@ function updateWeatherDisplay(weatherData, geoData, tideData) {
 
 function updateHistoryDisplay() {
     const history = document.getElementById("history");
-    history.innerHTML = '';
+    history.innerHTML = "";
 
     // Loop through all cached locations in weatherCache
     for (let [location, weatherData] of weatherCache.entries()) {
@@ -225,14 +207,29 @@ function updateHistoryDisplay() {
                 <div>Temp: ${normaliseTemp(weatherData.main.temp)}</div>
                 <div>Lat: ${geoData.results[0].latitude}</div>
                 <div>Tide: ${tideData.data[0].type}</div>
+                <div>Tide: ${tideData.data[0].time}</div>
             `;
 
             history.append(historyItem);
+            console.log("The search history has been updated");
         }
     }
 }
-// function showLoadingState() {}
-// function showErrorMessage(error) {}
+
+function showLoadingState() {
+    // weatherInfo.innerHTML = `Fetching weather info...`;
+    // cityInfo.innerHTML = `Fetching weather info...`;
+    // tideInfo.innerHTML = `Fetching weather info...`;
+}
+function showErrorMessage(error) {
+    const message = document.getElementById("message");
+    message.textContent = error;
+
+}
+function clearMessage(){
+    const message = document.getElementById("message");
+    message.textContent = "";
+}
 
 // Utility functions
 
@@ -248,7 +245,7 @@ function capitaliseLocation(location) {
     return location;
 }
 
-function normaliseTemp(temp){
+function normaliseTemp(temp) {
     temp = (temp - 273.15).toFixed(2);
     return temp;
 }
