@@ -58,17 +58,22 @@ utc timestamp format not ideal for display?
 
 user select the date and convert that into UT and search for a match?
 
+## pseudcode
+
+take user input
+
+for each i in data 
+if i includes dateInput
+display result
+
 limit date input to next 7 days?
 
 display previous searches overview from cache
 
 ## pseudcode
 
-take user input
-
-
-
-
+for i in eachCache
+    const info = cache[i].data.time
 
 
 

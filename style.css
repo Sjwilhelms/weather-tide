@@ -24,6 +24,20 @@ body {
     justify-content: center;
 }
 
+.historyDisplay{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#history{
+    gap: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 .weatherInfo {
     align-content: flex-end;
 }

@@ -26,6 +26,7 @@ async function searchWeather(location, date) {
             console.log("Using cached data");
             console.log("Updating the display with cached data");
             updateWeatherDisplay(cachedWeather, cachedGeo, cachedTide);
+            updateHistoryDisplay(weatherData, geoData, tideData)
             return cachedWeather, cachedGeo, cachedTide;
         } else {
             console.log("Fetching fresh data");
@@ -43,6 +44,7 @@ async function searchWeather(location, date) {
                 saveToWeatherCache(location, weatherData);
                 saveToGeoCache(location, geoData);
                 saveToTideCache(location, tideData);
+                updateHistoryDisplay();
             }
         }
     } catch (error) {
@@ -153,8 +155,8 @@ function updateWeatherDisplay(weatherData, geoData, tideData) {
     cityInfo = document.getElementById("cityInfo");
     tideInfo = document.getElementById("tideInfo");
 
-    const tempKelvin = weatherData.main.temp;
-    const temp = (tempKelvin - 273.15).toFixed(2);
+    let temp = weatherData.main.temp;
+    temp = normaliseTemp(temp);
     const weatherMain = weatherData.weather[0].main;
     const desc = weatherData.weather[0].description;
     const windDirection = weatherData.wind.deg;
@@ -204,11 +206,31 @@ function updateWeatherDisplay(weatherData, geoData, tideData) {
     console.log("The display has been updated");
 }
 
-function updateHistoryDisplay(){
+function updateHistoryDisplay() {
     const history = document.getElementById("history");
     history.innerHTML = '';
-}
 
+    // Loop through all cached locations in weatherCache
+    for (let [location, weatherData] of weatherCache.entries()) {
+        const geoData = geoCache.get(location);
+        const tideData = tideCache.get(location);
+
+        // Only proceed if all three caches have data for this location
+        if (geoData && tideData) {
+            const historyItem = document.createElement("div");
+            historyItem.classList.add("info");
+
+            historyItem.innerHTML = `
+                <div><strong>${capitaliseLocation(location)}</strong></div>
+                <div>Temp: ${normaliseTemp(weatherData.main.temp)}</div>
+                <div>Lat: ${geoData.results[0].latitude}</div>
+                <div>Tide: ${tideData.data[0].type}</div>
+            `;
+
+            history.append(historyItem);
+        }
+    }
+}
 // function showLoadingState() {}
 // function showErrorMessage(error) {}
 
@@ -218,6 +240,17 @@ function normaliseLocation(location) {
     location = location.toLowerCase().trim();
     console.log("Location is normalized:", location);
     return location;
+}
+
+function capitaliseLocation(location) {
+    location = location.charAt(0).toUpperCase() + location.slice(1);
+    console.log("Location is capitalised:", location);
+    return location;
+}
+
+function normaliseTemp(temp){
+    temp = (temp - 273.15).toFixed(2);
+    return temp;
 }
 
 // Cache management
