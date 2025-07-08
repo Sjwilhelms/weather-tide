@@ -22,12 +22,16 @@ async function searchWeather(location, date) {
         const cachedTide = checkTideCache(location);
 
         if (cachedWeather && cachedGeo && cachedTide) {
+            showLoadingState("Using cached data");
             console.log("Using cached data");
+            showLoadingState("Updating the display with cached data");
             console.log("Updating the display with cached data");
             updateWeatherDisplay(cachedWeather, cachedGeo, cachedTide);
             updateHistoryDisplay(weatherData, geoData, tideData);
             return cachedWeather, cachedGeo, cachedTide;
         } else {
+            showLoadingState("Fetching fresh data");
+            console.log("Fetching fresh data");
             console.log("Fetching fresh data");
             const weatherData = await fetchWeatherData(location);
             const geoData = await fetchGeoData(location);
@@ -36,10 +40,11 @@ async function searchWeather(location, date) {
             const tideData = await fetchTideData(lat, lon);
 
             if (weatherData && geoData && tideData) {
+                showLoadingState("Updating the display with fresh data");
                 console.log("Updating the display with fresh data");
                 updateWeatherDisplay(weatherData, geoData, tideData);
 
-                console.log("Saving fresh data to cache");
+                showLoadingState("Saving fresh data to cache");
                 saveToWeatherCache(location, weatherData);
                 saveToGeoCache(location, geoData);
                 saveToTideCache(location, tideData);
@@ -53,6 +58,7 @@ async function searchWeather(location, date) {
 
 // script2.js is a js module. window makes handleSearch() accessible in the window
 window.handleSearch = handleSearch;
+window.clearMessage = clearMessage;
 
 // function handleSearch() {}
 function handleSearch() {
@@ -216,10 +222,9 @@ function updateHistoryDisplay() {
     }
 }
 
-function showLoadingState() {
-    // weatherInfo.innerHTML = `Fetching weather info...`;
-    // cityInfo.innerHTML = `Fetching weather info...`;
-    // tideInfo.innerHTML = `Fetching weather info...`;
+function showLoadingState(loadingState) {
+    const message = document.getElementById("message");
+    message.innerHTML = `<div>${loadingState} <button onclick="clearMessage()">X</button></div>`;
 }
 function showErrorMessage(error) {
     const message = document.getElementById("message");
@@ -228,7 +233,7 @@ function showErrorMessage(error) {
 }
 function clearMessage(){
     const message = document.getElementById("message");
-    message.textContent = "";
+    message.innerHTML = "";
 }
 
 // Utility functions
