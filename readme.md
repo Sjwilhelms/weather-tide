@@ -72,13 +72,16 @@ or simply show 7 days by default eliminating the need to sanitise user input
 
 display previous searches overview from cache
 
-## pseudcode
+## TO DO NEXT:
 
-for i in eachCache
-    const info = cache[i].data.time
+need to resolve main function error
+show 7 day weather forecast
+show 7 day tide timestamp
+remove date user input
 
+## TO DO LATER:
 
-
+visualise the trend over the 7 days ahead
 
 
 
