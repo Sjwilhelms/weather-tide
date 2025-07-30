@@ -14,7 +14,6 @@ let tideInfo;
 
 async function searchWeather(location, date) {
     try {
-        
         location = normaliseLocation(location);
         console.log(date);
         const cachedWeather = checkWeatherCache(location);
@@ -32,11 +31,10 @@ async function searchWeather(location, date) {
         } else {
             showLoadingState("Fetching fresh data");
             console.log("Fetching fresh data");
-            console.log("Fetching fresh data");
-            const weatherData = await fetchWeatherData(location);
             const geoData = await fetchGeoData(location);
             const lat = geoData.results[0].latitude;
             const lon = geoData.results[0].longitude;
+            const weatherData = await fetchWeatherData(lat, lon);
             const tideData = await fetchTideData(lat, lon);
 
             if (weatherData && geoData && tideData) {
@@ -52,11 +50,11 @@ async function searchWeather(location, date) {
             }
         }
     } catch (error) {
-        showErrorMessage("There was an error.");
+        showErrorMessage("There was an error in the main function.");
     }
 }
 
-// script2.js is a js module. window makes handleSearch() accessible in the window
+// script2.js is a js module. window makes functions() accessible in the browser window
 window.handleSearch = handleSearch;
 window.clearMessage = clearMessage;
 
@@ -84,17 +82,18 @@ function handleSearch() {
 
 // API functions
 
-async function fetchWeatherData(location) {
+async function fetchWeatherData(lat, lon) {
     try {
+        console.log("Fetching fresh weather data");
         const response = await fetch(
-            `https://api.openweathermap.org/data/2.5/weather?q=${location}&appid=${WEATHER_API_KEY}`
+            `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=temperature_2m,apparent_temperature,precipitation_probability,weather_code,cloud_cover,visibility,pressure_msl&past_days=1`
         );
         if (response.ok) {
-            const data = await response.json();
-            return data;
+            const weatherData = await response.json();
+            return weatherData;
         }
     } catch (error) {
-        console.log(error);
+        showErrorMessage("Couldn't fetch weather data");
     }
 }
 
@@ -106,11 +105,11 @@ async function fetchGeoData(location) {
         );
 
         if (response.ok) {
-            const data = await response.json();
-            return data;
+            const geoData = await response.json();
+            return geoData;
         }
     } catch (error) {
-        console.log(error);
+        showErrorMessage("Couldn't fetch geo data");
     }
 }
 
@@ -132,7 +131,7 @@ async function fetchTideData() {
             console.log("The response is not okay");
         }
     } catch (error) {
-        console.log(error);
+        showErrorMessage("Couldn't fetch tide data");
     }
 }
 
@@ -156,13 +155,8 @@ function updateWeatherDisplay(weatherData, geoData, tideData) {
     const longitude = geoData.results[0].longitude;
 
     const type = tideData.data[0].type;
-    const type1 = tideData.data[1].type;
-    const type2 = tideData.data[2].type;
-    const type3 = tideData.data[3].type;
     const time = tideData.data[0].time;
-    const time1 = tideData.data[1].time;
-    const time2 = tideData.data[2].time;
-    const time3 = tideData.data[3].time;
+
 
     weatherInfo.innerHTML = "";
 
@@ -186,9 +180,6 @@ function updateWeatherDisplay(weatherData, geoData, tideData) {
 
     tideInfo.innerHTML = `
                 <div class="info">${type} water is at ${time}</div>
-                <div class="info">${type1} water is at ${time1}</div>
-                <div class="info">${type2} water is at ${time2}</div>
-                <div class="info">${type3} water is at ${time3}</div>
             `;
 
     console.log("The display has been updated");
@@ -229,9 +220,8 @@ function showLoadingState(loadingState) {
 function showErrorMessage(error) {
     const message = document.getElementById("message");
     message.textContent = error;
-
 }
-function clearMessage(){
+function clearMessage() {
     const message = document.getElementById("message");
     message.innerHTML = "";
 }

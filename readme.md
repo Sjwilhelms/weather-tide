@@ -68,6 +68,8 @@ display result
 
 limit date input to next 7 days?
 
+or simply show 7 days by default eliminating the need to sanitise user input
+
 display previous searches overview from cache
 
 ## pseudcode
