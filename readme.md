@@ -20,6 +20,8 @@ Many cities are not coastal
 
 Tide API's are an unknown quantity at present
 
+# SPRINT 1
+
 ## weatherapp 0.01 rudimentary weather app that makes api calls to fetch info
 
 ## weatherapp 0.02 add caching for api daya - call cache instead
@@ -71,6 +73,8 @@ limit date input to next 7 days?
 or simply show 7 days by default eliminating the need to sanitise user input
 
 display previous searches overview from cache
+
+# NEW SPRINT
 
 ## TO DO NEXT:
 
